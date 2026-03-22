@@ -12,9 +12,6 @@ WORKDIR /root/
 
 COPY --from=builder /app/server .
 
-# persist the host key across deploys
-VOLUME ["/root/.ssh"]
-
 EXPOSE 2222
 
 CMD ["./server"]
