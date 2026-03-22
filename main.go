@@ -67,21 +67,75 @@ func max(a, b int) int {
 // ── content ───────────────────────────────────────────────────────────────────
 
 func banner() string {
-	lines := []string{
-		blue.Render(" ██████╗ ███████╗███╗   ██╗"),
-		blue.Render(" ██╔══██╗██╔════╝████╗  ██║"),
-		blue.Render(" ██████╔╝█████╗  ██╔██╗ ██║"),
-		blue.Render(" ██╔══██╗██╔══╝  ██║╚██╗██║"),
-		blue.Render(" ██████╔╝███████╗██║ ╚████║"),
-		blue.Render(" ╚═════╝ ╚══════╝╚═╝  ╚═══╝"),
+	// ASCII art lines (pc graphic)
+	art := []string{
+		`   ,----------------,              ,---------,`,
+		`  ,-----------------------,       ,"        ,"|`,
+		` ,"                      ,"|    ,"        ,"  |`,
+		`+-----------------------+  |  ,"        ,"    |`,
+		`|  .-----------------.  |  | +---------+      |`,
+		`|  |                 |  |  | | -==----'|      |`,
+		`|  |  I LOVE GNU!    |  |  | |         |      |`,
+		`|  |  Bad command or |  |  |/|` + "`" + `---=    |      |`,
+		`|  |  C:\>_          |  |  |  ,/|==== ooo|      ;`,
+		`|  |                 |  |  | // |(((( [33]|    ,"`,
+		`|  ` + "`" + `-----------------'  |," .;'| |((((     |  ,"`,
+		`+-----------------------+  ;;  | |         |,"`,
+		`   /_)______________(_/ //'   | +---------+`,
+		`___________________________/___  ` + "`" + `,`,
+		` /  oooooooooooooooo  .o.  oooo /,   \,"-----------`,
+		`/ ==ooooooooooooooo==.o.  ooo= //   ,` + "`" + `\--{)B     ,"`,
+		`/_==__==========__==_ooo__ooo=_/'  /___________,"`,
+		`` + "`" + `-----------------------------'`,
 	}
-	out := strings.Join(lines, "\n")
-	out += "\n"
-	out += "\n" + fw(g("ben vaccaro")) + d2("  ·  ") + "builder · engineer · senior @ millis high"
-	out += "\n" + d("millis, ma  ·  class of 2027  ·  he/him")
-	out += "\n"
-	out += "\n" + rule(46)
-	out += "\n" + d("type ") + g("help") + d(" to get started  ·  ") + g("whoami") + d(" for the short version")
+
+	// info lines paired with art
+	info := []string{
+		fw(g("ben")) + d2("@") + fw(b("vaccaro")),
+		d(strings.Repeat("─", 16)),
+		d2("os      ") + g("debian") + d2(" gnu/linux"),
+		d2("role    ") + "builder · engineer · researcher",
+		d2("loc     ") + "millis, ma · class of 2027",
+		d2("shell   ") + g("/bin/hustle"),
+		d2("uptime  ") + p("17 years, 0 crashes"),
+		d2("focus   ") + t("cubesat · pcb design · comp bio"),
+		d2("langs   ") + "python · c++ · go · html/css/js · bash",
+		d2("now     ") + y("uplink — cubesat @ hackclub ysws"),
+		d2("ssh     ") + g("caboose.proxy.rlwy.net -p 15469"),
+		d2("web     ") + b("moorepreformance.dev"),
+		d2("github  ") + b("github.com/2008wbbv"),
+		"",
+		d2("        ") + colorBlocks(),
+	}
+
+	var sb strings.Builder
+	sb.WriteString("\n")
+	for i, artLine := range art {
+		colored := blue.Render(artLine)
+		if i < len(info) {
+			sb.WriteString("  " + colored + "   " + info[i])
+		} else {
+			sb.WriteString("  " + colored)
+		}
+		sb.WriteString("\n")
+	}
+	// remaining info lines if art ran out
+	for i := len(art); i < len(info); i++ {
+		sb.WriteString("  " + strings.Repeat(" ", 48) + info[i] + "\n")
+	}
+	sb.WriteString("\n")
+	sb.WriteString(rule(46) + "\n")
+	sb.WriteString(d("type ") + g("help") + d(" to get started  ·  ") + g("whoami") + d(" for the short version") + "\n")
+	sb.WriteString(d("you're in via ssh — try ") + g("help") + d(" to explore"))
+	return sb.String()
+}
+
+func colorBlocks() string {
+	colors := []string{"#f38ba8", "#fab387", "#f9e2af", "#a6e3a1", "#89b4fa", "#cba6f7", "#94e2d5", "#cdd6f4"}
+	out := ""
+	for _, c := range colors {
+		out += lipgloss.NewStyle().Background(lipgloss.Color(c)).Render("   ")
+	}
 	return out
 }
 
@@ -111,8 +165,8 @@ func helpCmd() string {
 }
 
 func whoamiCmd() string {
-	out := "\n" + fw("ben vaccaro") + d2(" — ") + "junior @ millis high. building hardware, robots, and software."
-	out += "\n" + d2("  mit bwsi cubesat lead  ·  founder @ mpi  ·  sea perch top-50  ·  mit blueprint winner  ·  comp bio researcher")
+	out := "\n" + fw("ben vaccaro") + d2(" — ") + "building hardware, robots, and software."
+	out += "\n" + d2("  mit bwsi cubesat · uplink @ hackclub · founder @ mpi · sea perch top-50 · mit blueprint winner")
 	return out
 }
 
@@ -364,11 +418,11 @@ func nowCmd() string {
 	ts := time.Now().UTC().Format("2006-01-02 15:04 UTC")
 	out := sec("now")
 	out += "\n"
-	out += "\n  " + d2("building   ") + fw(g("cubesat autonomous nav system"))
-	out += "\n  " + d2("           ") + "MIT BWSI — fault tolerance + obstacle detection"
+	out += "\n  " + d2("building   ") + fw(g("uplink")) + y(" — cubesat @ hackclub ysws")
+	out += "\n  " + d2("           ") + "building a real satellite with hackclub's you ship we ship"
 	out += "\n"
-	out += "\n  " + d2("also built ") + fw(p("epic-blueprint-repo")) + d2("  ← most recent commit")
-	out += "\n  " + d2("           ") + fw(t("lunar_mission_planner")) + d2("  ← this week")
+	out += "\n  " + d2("also       ") + fw(g("cubesat autonomous nav system"))
+	out += "\n  " + d2("           ") + "MIT BWSI — fault tolerance + obstacle detection"
 	out += "\n"
 	out += "\n  " + d2("running    ") + "MPI — new PCB designs, sourcing, shipping kits"
 	out += "\n  " + d2("researching") + "comp bio — AlphaFold, transistor miniaturization"
